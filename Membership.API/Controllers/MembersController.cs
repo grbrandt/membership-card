@@ -73,7 +73,7 @@ namespace Membership.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MemberExists(id))
+                if (!await repo.MemberExists(id))
                 {
                     return NotFound();
                 }
@@ -108,26 +108,22 @@ namespace Membership.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMember([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
-            var member = await _context.Members.SingleOrDefaultAsync(m => m.Id == id);
-            if (member == null)
-            {
-                return NotFound();
-            }
+            //var member = await _context.Members.SingleOrDefaultAsync(m => m.Id == id);
+            //if (member == null)
+            //{
+            //    return NotFound();
+            //}
 
-            _context.Members.Remove(member);
-            await _context.SaveChangesAsync();
-
-            return Ok(member);
-        }
-
-        private bool MemberExists(int id)
-        {
-            return _context.Members.Any(e => e.Id == id);
+            //_context.Members.Remove(member);
+            //await _context.SaveChangesAsync();
+            //TODO: Implement
+            //return Ok(member);
+            return NotFound();
         }
     }
 }

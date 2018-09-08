@@ -44,8 +44,8 @@ namespace Membership.Data
         /// <param name="entity">The entity.</param>
         public void Delete<TEntity>(TEntity entity) where TEntity : class
         {
-            if(typeof(TEntity).IsAssignableFrom(ISoftDeleteable)
-            if(context.Entry(entity).Properties.Any(p=>p.)
+            //if(typeof(TEntity).IsAssignableFrom(ISoftDeleteable)
+            //if(context.Entry(entity).Properties.Any(p=>p.)
             context.Remove(entity);
         }
 
@@ -119,6 +119,16 @@ namespace Membership.Data
             return await context.Members
                 .Where(member => member.ClubId == clubId)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Determines if a member with the specified ID exists in the database.
+        /// </summary>
+        /// <param name="memberId">The member identifier.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        public async Task<bool> MemberExists(int memberId)
+        {
+            return await context.Members.AnyAsync(m => m.Id == memberId);
         }
     }
 }
