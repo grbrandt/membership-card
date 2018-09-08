@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Membership.API.Models;
 using Membership.Data;
 using Membership.Data.Entities;
 
@@ -15,32 +11,40 @@ namespace Membership.API.Controllers
     [Route("api/Clubs")]
     public class ClubsController : Controller
     {
-        private readonly MembershipContext context;
         private readonly MembershipRepository repo;
 
-        public ClubsController(MembershipContext context, MembershipRepository repo)
+        public ClubsController(MembershipRepository repo)
         {
-            this.context = context;
             this.repo = repo;
         }
 
         // GET: api/Clubs
+        /// <summary>
+        /// Gets the clubs.
+        /// </summary>
+        /// <returns>Task&lt;IEnumerable&lt;Club&gt;&gt;.</returns>
         [HttpGet]
-        public IEnumerable<Club> GetClubs()
+        public async Task<IEnumerable<Club>> GetClubs()
         {
-            return context.Clubs;
+            return await repo.GetClubs();
         }
 
         // GET: api/Clubs/5
+        /// <summary>
+        /// Gets the club.
+        /// </summary>
+        /// <param name="id">The club id.</param>
+        /// <param name="includeMembers">if set to <c>true</c> members belonging to the club will be inculded in the returned data.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetClub([FromRoute] int id)
+        public async Task<IActionResult> GetClub([FromRoute] int id, [FromQuery]bool includeMembers = false)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var club = await repo.GetClubWithMembers(id);
+            var club = includeMembers ? await repo.GetClubWithMembers(id) : await repo.GetClub(id);
 
             if (club == null)
             {
@@ -64,15 +68,15 @@ namespace Membership.API.Controllers
                 return BadRequest();
             }
 
-            context.Entry(club).State = EntityState.Modified;
+            repo.Update(club);
 
             try
             {
-                await context.SaveChangesAsync();
+                await repo.SaveAllChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClubExists(id))
+                if (!await repo.ClubExists(id))
                 {
                     return NotFound();
                 }
@@ -93,9 +97,8 @@ namespace Membership.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            context.Clubs.Add(club);
-            await context.SaveChangesAsync();
+            repo.Add(club);
+            await repo.SaveAllChangesAsync();
 
             return CreatedAtAction("GetClub", new { id = club.Id }, club);
         }
@@ -109,21 +112,16 @@ namespace Membership.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var club = await context.Clubs.SingleOrDefaultAsync(m => m.Id == id);
-            if (club == null)
+            var club = await repo.GetClub(id);
+            if (!await repo.ClubExists(id))
             {
                 return NotFound();
             }
 
-            context.Clubs.Remove(club);
-            await context.SaveChangesAsync();
+            repo.Delete(club);
+            await repo.SaveAllChangesAsync();
 
             return Ok(club);
-        }
-
-        private bool ClubExists(int id)
-        {
-            return context.Clubs.Any(e => e.Id == id);
         }
     }
 }

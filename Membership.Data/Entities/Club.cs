@@ -2,7 +2,12 @@
 
 namespace Membership.Data.Entities
 {
-    public class Club
+    /// <summary>
+    /// The Club class represents a club and holds a reference to all <see cref="Member"/>s
+    /// that belongs to it.
+    /// </summary>
+    /// <seealso cref="Membership.Data.Entities.ISoftDeleteable" />
+    public class Club : ISoftDeleteable
     {
         public int Id { get; set; }
         public string Name { get; set; }

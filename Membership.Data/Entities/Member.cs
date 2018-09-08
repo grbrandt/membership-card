@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-
-namespace Membership.Data.Entities
+﻿namespace Membership.Data.Entities
 {
-    public class Member
+    /// <summary>
+    /// Class Member encapsulates a person who has a membership in a <see cref="Club"/>.
+    /// </summary>
+    /// <seealso cref="Membership.Data.Entities.ISoftDeleteable" />
+    public class Member : ISoftDeleteable
     {
         /// <summary>
         /// Gets or sets the identifier.

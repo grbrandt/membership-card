@@ -36,7 +36,14 @@ namespace Membership.API
                 //options.UseSqlServer(Configuration.GetConnectionString("MembershipContext"));
             });
             services.AddScoped<MembershipRepository, MembershipRepository>();
+            services.AddLogging(options =>
+            {
+                options.SetMinimumLevel(LogLevel.Information);
+                options.AddDebug();
+                options.AddConsole();
+                
 
+            });
 
         }
 

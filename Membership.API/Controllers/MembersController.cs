@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Membership.API.Models;
 using Membership.Data;
 using Membership.Data.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Membership.API.Controllers
 {
@@ -15,24 +16,39 @@ namespace Membership.API.Controllers
     [Route("api/Members")]
     public class MembersController : Controller
     {
+        private readonly ILogger<MembersController> logger;
         private readonly MembershipRepository repo;
 
-        public MembersController(MembershipRepository repo)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MembersController"/> class.
+        /// </summary>
+        /// <param name="repo">The repository</param>
+        public MembersController(ILogger<MembersController> logger, 
+            MembershipRepository repo)
         {
+            this.logger = logger;
             this.repo = repo;
         }
 
         // GET: api/Members
+        /// <summary>
+        /// Gets all registered members.
+        /// </summary>
+        /// <returns>Task&lt;IEnumerable&lt;Member&gt;&gt;.</returns>
         [HttpGet]
         public async Task<IEnumerable<Member>> GetMembers()
-        {
+        {           
+            logger.LogInformation("Retrieving all members", this.HttpContext.User.Identity.Name);
             return await repo.GetMembers();
         }
 
-
         // GET: api/Members/5
+        /// <summary>
+        /// Gets a member.
+        /// </summary>
+        /// <param name="id">The member id.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpGet("{id}", Name = Lib.Routes.AddMember)]
-        //[Route("api/members")]
         public async Task<IActionResult> GetMember([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -51,6 +67,12 @@ namespace Membership.API.Controllers
         }
 
         // PUT: api/Members/5
+        /// <summary>
+        /// Updates a member.
+        /// </summary>
+        /// <param name="id">The member id.</param>
+        /// <param name="member">The member model.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMember([FromRoute] int id, [FromBody] Member member)
         {
@@ -63,12 +85,11 @@ namespace Membership.API.Controllers
             {
                 return BadRequest();
             }
-            //_context.Entry(member).State = EntityState.Modified;
+
             repo.Update(member);
 
             try
             {
-                //await _context.SaveChangesAsync();
                 await repo.SaveAllChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -87,6 +108,11 @@ namespace Membership.API.Controllers
         }
 
         // POST: api/Members
+        /// <summary>
+        /// Creates a new member.
+        /// </summary>
+        /// <param name="member">The member model to insert.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPost]
         public async Task<IActionResult> PostMember([FromBody] Member member)
         {
@@ -95,9 +121,6 @@ namespace Membership.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            //_context.Members.Add(member);
-            //await _context.SaveChangesAsync();
-            
             repo.Add(member);
             await repo.SaveAllChangesAsync();
 
@@ -105,25 +128,30 @@ namespace Membership.API.Controllers
         }
 
         // DELETE: api/Members/5
+        /// <summary>
+        /// Deletes a member.
+        /// </summary>
+        /// <param name="id">The member id.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMember([FromRoute] int id)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            //var member = await _context.Members.SingleOrDefaultAsync(m => m.Id == id);
-            //if (member == null)
-            //{
-            //    return NotFound();
-            //}
+            var member = await repo.GetMember(id);
+            if (member == null)
+            {
+                return NotFound();
+            }
+            
+            repo.Delete(member);
 
-            //_context.Members.Remove(member);
-            //await _context.SaveChangesAsync();
-            //TODO: Implement
-            //return Ok(member);
-            return NotFound();
+            await repo.SaveAllChangesAsync();
+            logger.LogInformation("Deleted member", member);
+            return Ok(member);
         }
     }
 }

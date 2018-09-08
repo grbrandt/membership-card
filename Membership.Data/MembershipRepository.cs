@@ -10,6 +10,9 @@ using Remotion.Linq.Clauses;
 
 namespace Membership.Data
 {
+    /// <summary>
+    /// Class MembershipRepository controls all data access through the repository pattern.
+    /// </summary>
     public class MembershipRepository
     {
         private readonly MembershipContext context;
@@ -30,23 +33,36 @@ namespace Membership.Data
             context.Add(entity);
         }
 
+        /// <summary>
+        /// Marks the specified entity as modified.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the t entity.</typeparam>
+        /// <param name="entity">The entity.</param>
         public void Update<TEntity>(TEntity entity) where TEntity : class
         {
             context.Entry(entity).State = EntityState.Modified;
-
         }
 
         /// <summary>
         /// Deletes the specified entity from the context. It will be deleted
         /// from the database when SaveAllChanges() is called.
+        /// If the entity implements <see cref="ISoftDeleteable"/> it will simply
+        /// update the <see cref="ISoftDeleteable.IsDeleted"/> property and not
+        /// physically remove the instance from the underlying data source. 
         /// </summary>
-        /// <typeparam name="TEntity">The type of the t entity.</typeparam>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         public void Delete<TEntity>(TEntity entity) where TEntity : class
         {
-            //if(typeof(TEntity).IsAssignableFrom(ISoftDeleteable)
-            //if(context.Entry(entity).Properties.Any(p=>p.)
-            context.Remove(entity);
+            if (typeof(ISoftDeleteable).IsAssignableFrom(typeof(TEntity)))
+            {
+                ((ISoftDeleteable)entity).IsDeleted = true;
+                context.Entry(entity).State = EntityState.Modified;
+            }
+            else
+            {
+                context.Remove(entity);
+            }
         }
 
         /// <summary>
@@ -129,6 +145,27 @@ namespace Membership.Data
         public async Task<bool> MemberExists(int memberId)
         {
             return await context.Members.AnyAsync(m => m.Id == memberId);
+        }
+
+        /// <summary>
+        /// Gets the club.
+        /// </summary>
+        /// <param name="id">The club id.</param>
+        /// <returns>Task&lt;System.Object&gt;.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Club> GetClub(int id)
+        {
+            return await context.Clubs.SingleOrDefaultAsync(c => c.Id == id);
+        }
+
+        /// <summary>
+        /// Determines if a club with the specified ID exists in the database.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        public async Task<bool> ClubExists(int id)
+        {
+            return await context.Clubs.AnyAsync(c => c.Id == id);
         }
     }
 }
