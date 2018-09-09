@@ -42,13 +42,23 @@ namespace Membership.API.Controllers
             return await repo.GetMembers();
         }
 
+        [HttpGet("Find/{username}")]
+        public async Task<IActionResult> GetMember([FromRoute]string username)
+        {
+            var member = await repo.FindMember(username);
+            if (member == null)
+                return NotFound(username);
+
+            return Ok(member);
+        }
+
         // GET: api/Members/5
         /// <summary>
         /// Gets a member.
         /// </summary>
         /// <param name="id">The member id.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        [HttpGet("{id}", Name = Lib.Routes.AddMember)]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetMember([FromRoute] int id)
         {
             if (!ModelState.IsValid)

@@ -12,6 +12,7 @@ namespace Membership.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public virtual ICollection<Member> Members { get; set; }
+        public ClubSettings Settings { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

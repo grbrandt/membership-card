@@ -43,6 +43,12 @@ namespace Membership.Data
             context.Entry(entity).State = EntityState.Modified;
         }
 
+        public async Task<Member> FindMember(string username)
+        {
+            return await context.Members
+                .FirstOrDefaultAsync(m => m.Name.StartsWith(username));
+        }
+
         /// <summary>
         /// Deletes the specified entity from the context. It will be deleted
         /// from the database when SaveAllChanges() is called.

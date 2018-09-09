@@ -32,20 +32,41 @@ namespace Membership.API.Models
                     new Club
                     {
                         Id = 1,
-                        Name = "The Magicians"
+                        Name = "The Magicians",
                     },
                     new Club
                     {
                         Id = 2,
-                        Name = "Amazing Gumball"
+                        Name = "Amazing Gumball",
                     },
                     new Club
                     {
                         Id = 3,
-                        Name = "The Wart"
+                        Name = "The Wart",
                     }
                     );
             });
+
+            modelBuilder.Entity<Club>().OwnsOne(p => p.Settings)
+                .HasData(
+                new
+                {
+                    ClubId = 1,
+                    QRDefaultValidityPeriod = TimeSpan.FromMinutes(10)
+                },
+                new
+                {
+                    ClubId = 2,
+                    QRDefaultValidityPeriod = TimeSpan.FromMinutes(10)
+
+                },
+                new
+                {
+                    ClubId = 3,
+                    QRDefaultValidityPeriod = TimeSpan.FromMinutes(10)
+
+                });
+
 
             modelBuilder.Entity<Member>(m =>
             {
@@ -86,10 +107,10 @@ namespace Membership.API.Models
                 });
             });
 
-           
+
         }
 
-    public DbSet<Member> Members { get; set; }
-    public DbSet<Club> Clubs { get; set; }
-}
+        public DbSet<Member> Members { get; set; }
+        public DbSet<Club> Clubs { get; set; }
+    }
 }
