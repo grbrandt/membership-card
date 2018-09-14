@@ -97,7 +97,7 @@ namespace Membership.API.Models
             });
 
             modelBuilder.Entity<Data.Entities.Membership>()
-                .HasKey(c => new { c.ClubId, c.MemberId });
+                .HasKey(c => new { c.ClubId, c.PersonId });
 
             //modelBuilder.Entity<Data.Entities.Membership>()
             //    .HasOne(cl => cl.Club)

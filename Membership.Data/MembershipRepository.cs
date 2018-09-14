@@ -138,16 +138,13 @@ namespace Membership.Data
         /// <returns>Task&lt;IEnumerable&lt;Member&gt;&gt;.</returns>
         public async Task<IEnumerable<Person>> GetMembersInClub(int clubId)
         {
-            //return await context.Clubs
-            //    .Where(c => c.Id == clubId)
-            //    .Include(t => t.Members)
-            //    .ThenInclude(me=>me.)
-            //    .ToListAsync();
-            
-            return await context.Members
-                .Include(m=>m.Memberships)
-                .ThenInclude(e=>e.Club)
-                .ToListAsync();
+            var club = await context.Clubs
+                .Include(m => m.Memberships)
+                .ThenInclude(m => m.Person)
+                .Where(m => m.Id == clubId)
+                .SingleOrDefaultAsync();
+
+            return club?.Memberships?.Select(t => t.Person);
         }
 
         /// <summary>
