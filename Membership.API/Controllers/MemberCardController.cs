@@ -24,7 +24,7 @@ namespace Membership.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GenerateQrImage()
+        public IActionResult GenerateQrImage()
         {
             string secret =
                 "{\"name\":\"BennyLongbottoms\",\"validity\":\"2018-09-09 20:39:59Z\",\"cardnumber\":6663399,\"club\":\"SuperSecret Villain Club\",\"sign\":\"AEmnuPW30Ga+RKmeoSGcoHQD7/ErDOahDRMdEcI2loqxutsVi8QbxPJpOXsNGn03I4cIhF9UGo82Grp1HnWVbQ==\"}";

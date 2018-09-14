@@ -17,9 +17,6 @@ namespace Membership.API.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-
-            //optionsBuilder
-            //    .UseLazyLoadingProxies();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -68,49 +65,55 @@ namespace Membership.API.Models
                 });
 
 
-            modelBuilder.Entity<Member>(m =>
+            modelBuilder.Entity<Person>(m =>
             {
                 m.HasData(new[]
                 {
-                    new Member
+                    new Person
                     {
                         Id = 1,
                         Email = "donald@hush.com",
-                        MembershipNumber = 2001,
                         Name = "Donald",
-                        ClubId = 1
                     },
-                    new Member
+                    new Person
                     {
                         Id = 2,
                         Email = "dolly@hush.com",
-                        MembershipNumber = 2002,
                         Name = "Dolly",
-                        ClubId = 1
                     },
-                    new Member
+                    new Person
                     {
                         Id = 3,
                         Email = "goofy@hush.com",
-                        MembershipNumber = 2003,
                         Name = "Goofy",
-                        ClubId = 2
                     },
-                    new Member
+                    new Person
                     {
                         Id = 4,
                         Email = "pluto@hush.com",
-                        MembershipNumber = 2004,
                         Name = "Pluto",
-                        ClubId = 3
                     }
                 });
             });
 
+            modelBuilder.Entity<Data.Entities.Membership>()
+                .HasKey(c => new { c.ClubId, c.MemberId });
+
+            //modelBuilder.Entity<Data.Entities.Membership>()
+            //    .HasOne(cl => cl.Club)
+            //    .WithMany(c => c.Memberships)
+            //    .HasForeignKey(cl => cl.ClubId);
+
+            //modelBuilder.Entity<Data.Entities.Membership>()
+            //    .HasOne(m => m.Member)
+            //    .WithMany(mc => mc.Memberships)
+            //    .HasForeignKey(m => m.MemberId);
+                
+                
 
         }
 
-        public DbSet<Member> Members { get; set; }
+        public DbSet<Person> Members { get; set; }
         public DbSet<Club> Clubs { get; set; }
     }
 }

@@ -43,7 +43,7 @@ namespace Membership.Data
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        public async Task<Member> FindMember(string username)
+        public async Task<Person> FindMember(string username)
         {
             return await context.Members
                 .FirstOrDefaultAsync(m => m.Name.StartsWith(username));
@@ -107,7 +107,7 @@ namespace Membership.Data
         public async Task<Club> GetClubWithMembers(int clubId)
         {
             return await context.Clubs
-                .Include(c => c.Members)
+                .Include(c => c.Memberships)
                 .Where(c => c.Id == clubId)
                 .SingleOrDefaultAsync();
         }
@@ -117,7 +117,7 @@ namespace Membership.Data
         /// </summary>
         /// <param name="id">The member id.</param>
         /// <returns>Task&lt;Member&gt;.</returns>
-        public async Task<Member> GetMember(int id)
+        public async Task<Person> GetMember(int id)
         {
             return await context.Members
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -126,7 +126,7 @@ namespace Membership.Data
         /// Gets all members.
         /// </summary>
         /// <returns>Task&lt;IEnumerable&lt;Member&gt;&gt;.</returns>
-        public async Task<IEnumerable<Member>> GetMembers()
+        public async Task<IEnumerable<Person>> GetMembers()
         {
             return await context.Members.ToListAsync();
         }
@@ -136,10 +136,17 @@ namespace Membership.Data
         /// </summary>
         /// <param name="clubId">The club id.</param>
         /// <returns>Task&lt;IEnumerable&lt;Member&gt;&gt;.</returns>
-        public async Task<IEnumerable<Member>> GetMembersInClub(int clubId)
+        public async Task<IEnumerable<Person>> GetMembersInClub(int clubId)
         {
+            //return await context.Clubs
+            //    .Where(c => c.Id == clubId)
+            //    .Include(t => t.Members)
+            //    .ThenInclude(me=>me.)
+            //    .ToListAsync();
+            
             return await context.Members
-                .Where(member => member.ClubId == clubId)
+                .Include(m=>m.Memberships)
+                .ThenInclude(e=>e.Club)
                 .ToListAsync();
         }
 

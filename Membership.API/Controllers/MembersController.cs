@@ -36,7 +36,7 @@ namespace Membership.API.Controllers
         /// </summary>
         /// <returns>Task&lt;IEnumerable&lt;Member&gt;&gt;.</returns>
         [HttpGet]
-        public async Task<IEnumerable<Member>> GetMembers()
+        public async Task<IEnumerable<Person>> GetMembers()
         {           
             logger.LogInformation("Retrieving all members", this.HttpContext.User.Identity.Name);
             return await repo.GetMembers();
@@ -84,7 +84,7 @@ namespace Membership.API.Controllers
         /// <param name="member">The member model.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMember([FromRoute] int id, [FromBody] Member member)
+        public async Task<IActionResult> PutMember([FromRoute] int id, [FromBody] Person member)
         {
             if (!ModelState.IsValid)
             {
@@ -124,7 +124,7 @@ namespace Membership.API.Controllers
         /// <param name="member">The member model to insert.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPost]
-        public async Task<IActionResult> PostMember([FromBody] Member member)
+        public async Task<IActionResult> PostMember([FromBody] Person member)
         {
             if (!ModelState.IsValid)
             {

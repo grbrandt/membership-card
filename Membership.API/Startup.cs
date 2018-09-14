@@ -32,8 +32,8 @@ namespace Membership.API
 
             services.AddDbContext<MembershipContext>(options =>
             {
-                options.UseInMemoryDatabase("MembershipDatabase");
-                //options.UseSqlServer(Configuration.GetConnectionString("MembershipContext"));
+                //options.UseInMemoryDatabase("MembershipDatabase");
+                options.UseSqlServer(Configuration.GetConnectionString("MembershipContext"));
             });
             services.AddScoped<MembershipRepository, MembershipRepository>();
             services.AddLogging(options =>
