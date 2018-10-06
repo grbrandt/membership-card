@@ -28,6 +28,7 @@ namespace Membership.API.Controllers
         {
             this.logger = logger;
             this.repo = repo;
+            this.logger.LogTrace("Created members controller");
         }
 
         // GET: api/Members

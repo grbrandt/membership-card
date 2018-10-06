@@ -140,11 +140,11 @@ namespace Membership.Data
         {
             var club = await context.Clubs
                 .Include(m => m.Memberships)
-                .ThenInclude(m => m.Person)
+                .ThenInclude(m => m.Member)
                 .Where(m => m.Id == clubId)
                 .SingleOrDefaultAsync();
 
-            return club?.Memberships?.Select(t => t.Person);
+            return club?.Memberships?.Select(t => t.Member);
         }
 
         /// <summary>
@@ -177,5 +177,88 @@ namespace Membership.Data
         {
             return await context.Clubs.AnyAsync(c => c.Id == id);
         }
+
+        #region Registration
+
+        /// <summary>
+        /// Generates a validation token.
+        /// </summary>
+        /// <param name="member">The member.</param>
+        /// <param name="club">The club.</param>
+        /// <param name="daysValid">The number of days the token should remain valid.</param>
+        /// <returns>RegistrationToken.</returns>
+        public RegistrationToken GenerateValidationToken(Person member, Club club,
+            int daysValid = 365)
+        {
+            if (member == null || club == null)
+                return null;
+
+            var vals = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+            int codeLength = 6;
+            var ran = new Random();
+            var tokenbuilder = new StringBuilder();
+            for (int i = 0; i < codeLength; i++)
+            {
+                tokenbuilder.Append(vals[ran.Next(0, vals.Length - 1)]);
+            }
+
+            var token = new RegistrationToken
+            {
+                Member = member,
+                Club = club,
+                IsValid = true,
+                Expires = DateTime.Now.AddDays(daysValid)
+            };
+            return token;
+        }
+
+        /// <summary>
+        /// Validates a token against a member name. Returns 
+        /// </summary>
+        /// <param name="member">The member.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;TokenValidationResult&gt;.</returns>
+        public async Task<TokenValidationResult> ValidateToken(Person member, string token)
+        {
+            var result = await context.RegistrationTokens
+                .FirstOrDefaultAsync(c => c.Member == member && c.TokenValue == token);
+
+            if (result == null)
+                return new InvalidTokenResult();
+
+            if (result.Expires <= DateTime.Now)
+                return new ExpiredTokenResult();
+
+            var validationResult = new TokenValidationResult();
+            validationResult.Club = result.Club.Name;
+            validationResult.Valid = true;
+
+            return validationResult;
+        }
+        #endregion
+
+    }
+
+    public class ExpiredTokenResult : TokenValidationResult
+    {
+        public ExpiredTokenResult()
+        {
+            Valid = false;
+        }
+    }
+
+    public class InvalidTokenResult : TokenValidationResult
+    {
+        public InvalidTokenResult()
+        {
+            Valid = false;
+        }
+    }
+
+    public class TokenValidationResult
+    {
+        public string Club { get; set; }
+        public bool Valid { get; set; }
     }
 }

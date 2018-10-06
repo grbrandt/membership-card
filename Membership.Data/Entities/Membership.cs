@@ -9,8 +9,8 @@ namespace Membership.Data.Entities
         public int ClubId { get; set; }
         public Club Club { get; set; }
 
-        public int PersonId { get; set; }
-        public Person Person { get; set; }
+        public int MemberId { get; set; }
+        public Person Member { get; set; }
 
         public string MemberNumber { get; set; }
 

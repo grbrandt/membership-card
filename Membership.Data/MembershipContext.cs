@@ -97,7 +97,20 @@ namespace Membership.API.Models
             });
 
             modelBuilder.Entity<Data.Entities.Membership>()
-                .HasKey(c => new { c.ClubId, c.PersonId });
+                .HasKey(c => new { c.ClubId, c.MemberId });
+
+            modelBuilder.Entity<RegistrationToken>()
+                .HasKey(k => new {k.MemberId, k.ClubId});
+            modelBuilder.Entity<RegistrationToken>()
+                .HasIndex(i => new {i.MemberId, i.TokenValue});
+            modelBuilder.Entity<RegistrationToken>()
+                .Property(p => p.TokenValue)
+                .IsRequired();
+
+            // No two persons can have the same registered name
+            modelBuilder.Entity<Person>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
 
             //modelBuilder.Entity<Data.Entities.Membership>()
             //    .HasOne(cl => cl.Club)
@@ -108,12 +121,13 @@ namespace Membership.API.Models
             //    .HasOne(m => m.Member)
             //    .WithMany(mc => mc.Memberships)
             //    .HasForeignKey(m => m.MemberId);
-                
-                
+
+
 
         }
 
         public DbSet<Person> Members { get; set; }
         public DbSet<Club> Clubs { get; set; }
+        public DbSet<RegistrationToken> RegistrationTokens { get; set; }
     }
 }

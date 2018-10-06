@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Membership.API.Models;
 using Membership.Data;
+using Membership.Data.Entities;
 using Newtonsoft.Json;
 
 namespace Membership.API
@@ -29,7 +30,7 @@ namespace Membership.API
         {
             services.AddMvc()
                 .AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-
+            
             services.AddDbContext<MembershipContext>(options =>
             {
                 //options.UseInMemoryDatabase("MembershipDatabase");
