@@ -108,6 +108,7 @@ namespace Membership.Data
         {
             return await context.Clubs
                 .Include(c => c.Memberships)
+                .ThenInclude(c => c.Member)
                 .Where(c => c.Id == clubId)
                 .SingleOrDefaultAsync();
         }
