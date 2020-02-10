@@ -8,6 +8,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Membership.API
@@ -16,18 +17,20 @@ namespace Membership.API
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Run();
+            //BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
+        public static IHost CreateHostBuilder(string[] args)
         {
-            var host = WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+            var host = Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(builder => 
+                { builder.UseStartup<Startup>();})
+            .Build();
 
-            using (var scope = host.Services.CreateScope())
+            using ( var scope = host.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<MembershipContext>();                
+                var context = scope.ServiceProvider.GetService<MembershipContext>();
                 context.Database.EnsureCreated();
             }
 

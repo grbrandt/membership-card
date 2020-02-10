@@ -28,7 +28,7 @@ namespace Membership.Data.Entities
         /// Gets the memberships.
         /// </summary>
         /// <value>The memberships.</value>
-        public ICollection<Membership> Memberships { get; } = new List<Membership>();
+        public virtual ICollection<Membership> Memberships { get; } = new List<Membership>();
         /// <summary>
         /// Gets or sets a value indicating whether this instance is deleted.
         /// </summary>

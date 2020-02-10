@@ -13,6 +13,7 @@ using Membership.API.Models;
 using Membership.Data;
 using Membership.Data.Entities;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Hosting;
 
 namespace Membership.API
 {
@@ -28,9 +29,11 @@ namespace Membership.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+
             services.AddMvc()
-                .AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
             services.AddDbContext<MembershipContext>(options =>
             {
                 //options.UseInMemoryDatabase("MembershipDatabase");
@@ -42,21 +45,28 @@ namespace Membership.API
                 options.SetMinimumLevel(LogLevel.Information);
                 options.AddDebug();
                 options.AddConsole();
-                
+
 
             });
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => 
+            {
+                endpoints.MapControllers(); 
+            });
         }
     }
 }

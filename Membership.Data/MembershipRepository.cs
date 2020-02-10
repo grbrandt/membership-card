@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Membership.API.Models;
 using Membership.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Remotion.Linq.Clauses;
 
 namespace Membership.Data
 {
@@ -120,7 +119,8 @@ namespace Membership.Data
         /// <returns>Task&lt;Member&gt;.</returns>
         public async Task<Person> GetMember(int id)
         {
-            return await context.Members
+            return await context.Members     
+                .Include(m=>m.Memberships)
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
         /// <summary>

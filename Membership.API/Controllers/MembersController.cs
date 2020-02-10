@@ -77,6 +77,18 @@ namespace Membership.API.Controllers
             return Ok(member);
         }
 
+        [HttpGet("{id}/card")]
+        public async Task<IActionResult> GetCardForMember([FromRoute] int id)
+        {
+            var member = await repo.GetMember(id);
+            if (member == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(member);
+        }
+
         // PUT: api/Members/5
         /// <summary>
         /// Updates a member.
