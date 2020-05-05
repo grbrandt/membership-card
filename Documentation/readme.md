@@ -4,7 +4,7 @@
 Some entities are implements the [ISoftDeletable](https://github.com/grbrandt/membership-card/blob/master/Membership.Data/Entities/ISoftDeleteable.cs) interface. These entities will not be removed physically from the database when the a delete operation is executed against a record through the data context. Instead, it will set the *IsDeleted* column to **True**. 
 
 ### Clubs entity
-The clubs entity contains basic information about a registered club. A club can have many members which are linked through the **Membership**-entity
+The clubs entity contains basic information about a registered club. A club can have many members which are linked through the [**Membership**](#membership-entity)-entity
 PK|Column name|Type|Nullable|Default Value|Notes
 --|-----------|----|--------|-------------|-----
 Y|Id|int|False
