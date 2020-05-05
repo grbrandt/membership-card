@@ -1,6 +1,6 @@
 # membership-card
 ## Electronic membership validation
-- Targets .NET Core 2.1
+- Targets .NET Core 3.1
 - Uses EF Core and ASPNET Core MVC
 
 # Overview
